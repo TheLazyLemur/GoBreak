@@ -55,6 +55,7 @@ func main() {
 
 	var pause bool = false
 	var barX float32 = float32(WindowWidth)/2 - BarLen/2
+	var barXVel float32 = 0
 	var gameStarted bool = false
 	var projRec rl.Rectangle
 	var projVel ProjVel
@@ -71,9 +72,9 @@ func main() {
 
 		rl.ClearBackground(BackgroundColor)
 
-		for _, element := range targets {
-			if !element.dead {
-				targetRec := rl.Rectangle{X: element.x, Y: element.y, Width: TargetWidth, Height: TargetHeight}
+		for _, target := range targets {
+			if !target.dead {
+				targetRec := rl.Rectangle{X: target.x, Y: target.y, Width: TargetWidth, Height: TargetHeight}
 				rl.DrawRectangleRec(targetRec, TargetColor)
 			}
 		}
@@ -83,7 +84,7 @@ func main() {
 		}
 
 		if rl.IsKeyDown(rl.KeyRight) && !pause {
-			barX += BarSpeed * rl.GetFrameTime()
+			barXVel = 1
 			if !gameStarted {
 				gameStarted = true
 				projVel.x = 1
@@ -91,12 +92,18 @@ func main() {
 		}
 
 		if rl.IsKeyDown(rl.KeyLeft) && !pause {
-			barX -= BarSpeed * rl.GetFrameTime()
+			barXVel = -1
 			if !gameStarted {
 				gameStarted = true
 				projVel.x = -1
 			}
 		}
+
+		if !rl.IsKeyDown(rl.KeyLeft) && !rl.IsKeyDown(rl.KeyRight) {
+			barXVel = 0
+		}
+
+		barX += barXVel * BarSpeed * rl.GetFrameTime()
 
 		playerRec := rl.Rectangle{X: barX, Y: BarY, Width: BarLen, Height: 20}
 		rl.DrawRectangleRec(playerRec, BarColor)
@@ -121,12 +128,7 @@ func main() {
 		projRec = rl.Rectangle{X: projRec.X, Y: projRec.Y, Width: ProjSize, Height: ProjSize}
 
 		for i, target := range targets {
-			targetRec := rl.Rectangle{
-				Width:  TargetWidth,
-				Height: TargetHeight,
-				X:      float32(target.x),
-				Y:      float32(target.y),
-			}
+			targetRec := rl.Rectangle{X: target.x, Y: target.y, Width: TargetWidth, Height: TargetHeight}
 
 			if rl.CheckCollisionRecs(targetRec, projRec) && !target.dead {
 				projVel.y *= -1
@@ -136,6 +138,9 @@ func main() {
 
 		if rl.CheckCollisionRecs(playerRec, projRec) {
 			projVel.y *= -1
+			if barXVel != 0 {
+				projVel.x = barXVel
+			}
 		}
 
 		rl.DrawRectangleRec(projRec, ProjColor)
