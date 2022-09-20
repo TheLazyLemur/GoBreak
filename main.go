@@ -53,6 +53,7 @@ func initTargets() []Target {
 func main() {
 	targets := initTargets()
 
+	var pause bool = false
 	var barX float32 = float32(WindowWidth)/2 - BarLen/2
 	var gameStarted bool = false
 	var projRec rl.Rectangle
@@ -77,7 +78,11 @@ func main() {
 			}
 		}
 
-		if rl.IsKeyDown(rl.KeyRight) {
+		if rl.IsKeyPressed(rl.KeySpace) {
+			pause = !pause
+		}
+
+		if rl.IsKeyDown(rl.KeyRight) && !pause {
 			barX += BarSpeed * rl.GetFrameTime()
 			if !gameStarted {
 				gameStarted = true
@@ -85,7 +90,7 @@ func main() {
 			}
 		}
 
-		if rl.IsKeyDown(rl.KeyLeft) {
+		if rl.IsKeyDown(rl.KeyLeft) && !pause {
 			barX -= BarSpeed * rl.GetFrameTime()
 			if !gameStarted {
 				gameStarted = true
@@ -96,7 +101,7 @@ func main() {
 		playerRec := rl.Rectangle{X: barX, Y: BarY, Width: BarLen, Height: 20}
 		rl.DrawRectangleRec(playerRec, BarColor)
 
-		if gameStarted {
+		if gameStarted && !pause {
 			projRec.Y += projVel.y * ProjSpeed * rl.GetFrameTime()
 			projRec.X += projVel.x * ProjSpeed * rl.GetFrameTime()
 		}
