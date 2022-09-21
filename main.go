@@ -104,6 +104,12 @@ func main() {
 		}
 
 		barX += barXVel * BarSpeed * rl.GetFrameTime()
+		if barX <= 0 {
+			barX = 0
+		}
+		if barX >= float32(WindowWidth)-BarLen {
+			barX = float32(WindowWidth) - BarLen
+		}
 
 		playerRec := rl.Rectangle{X: barX, Y: BarY, Width: BarLen, Height: 20}
 		rl.DrawRectangleRec(playerRec, BarColor)
@@ -113,7 +119,7 @@ func main() {
 			projRec.X += projVel.x * ProjSpeed * rl.GetFrameTime()
 		}
 
-		if projRec.X >= float32(WindowWidth) || projRec.X <= float32(0) {
+		if projRec.X >= float32(WindowWidth)-ProjSize || projRec.X <= float32(0) {
 			projVel.x *= -1
 		}
 
