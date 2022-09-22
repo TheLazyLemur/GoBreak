@@ -51,6 +51,8 @@ func initTargets() []Target {
 }
 
 func main() {
+	var shouldExit bool
+
 	targets := initTargets()
 
 	var pause bool = false
@@ -67,7 +69,7 @@ func main() {
 	rl.InitWindow(WindowWidth, WindowHeight, "GoBreaker - Example game")
 	rl.SetTargetFPS(FPS)
 
-	for !rl.WindowShouldClose() {
+	for !rl.WindowShouldClose() && !shouldExit {
 		rl.BeginDrawing()
 
 		rl.ClearBackground(BackgroundColor)
@@ -128,7 +130,7 @@ func main() {
 		}
 
 		if projRec.Y > float32(WindowHeight) {
-			rl.CloseWindow()
+			shouldExit = true
 		}
 
 		projRec = rl.Rectangle{X: projRec.X, Y: projRec.Y, Width: ProjSize, Height: ProjSize}
